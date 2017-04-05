@@ -102,17 +102,23 @@ HomeostatUnit.prototype.loop = function() {
 HomeostatUnit.prototype.update = function() {
 	if(!this.manualOutput) {
 		this.output = 0;
+		var divisor = 0;
 		for (var i = 0; i < this.input.length; i++) {
 			if(!this.uniselectorState[i]) {
 				this.inputCommutator[i] = $('#unit-' + this.id + ' .input-' + i + ' .commutator').val();
 				this.inputPotentiometer[i] = $('#unit-' + this.id + ' .input-' + i + ' .potentiometer').val();
 				this.inputCoil[i] = this.input[i] * this.inputCommutator[i] * this.inputPotentiometer[i];
+				divisor += +this.inputPotentiometer[i];
 			} else {
 				this.inputCoil[i] = this.input[i] * this.uniselector[i][this.uniselectorIndex[i]];
+				divisor += +Math.abs(this.uniselector[i][this.uniselectorIndex[i]]);
 			}
 			this.output += this.inputCoil[i];
 		};
-		this.output = Math.round( this.output / this.input.length * this.resolution) / this.resolution;
+		// this.output = Math.round( (this.output / this.input.length) * this.resolution) / this.resolution;
+		divisor = divisor == 0 ? +this.input.length : divisor;
+		this.output = Math.round( (this.output / divisor) * this.resolution) / this.resolution;
+
 		if((this.output > 0.1 || this.output < -0.1) && this.steps - this.uniselectorLastChange > this.uniselectorDelay) {
 			for (var i = 0; i < this.input.length; i++) {
 				if(this.uniselectorIndex[i] < this.uniselector[i].length - 1) {
