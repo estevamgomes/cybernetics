@@ -6,50 +6,59 @@ var HomeostatUnit = function(config) {
 	this.id = config.id;
 	this.steps = 0; // steps since the program started
 
-	this.manualInput = [false, false, false, false];
-
-	this.input = [0, 0, 0, 0];
-
 	this.resolution = 10000;
+	this.siblings = config.siblings;
 
-	/*
-	But the inputs, instead of being controlled by parameters set by hand,
-	can be sent by the switches S through similar components arranged
-	on a uniselector (or 'stepping-switch') U. The values of the
-	components in U were deliberately randomised by taking the
-	actual numerical values from Fisher and Yates' Table of Random
-	Numbers. Once built on to the uniselectors, the values of these
-	parameters are determined at any moment by the positions of
-	the uniselectors. Twenty-five positions on each of four uniselectors
-	(one to each unit) provide 390,625 combinations of
-	parameter-values
-	*/
+	this.output = 0;
+	this.manualOutput = false;
+
+	this.input = [];
+	this.manualInput = [];
+	this.inputCommutator = [];
+	this.inputPotentiometer = [];
+	this.inputCoil = [];
+
+	this.uniselector = [];
 	this.uniselectorLastChange = 0; // last step when the uniselector was changed
 	this.uniselectorDelay = 5; // last step when the uniselector was changed
-	this.uniselectorState = [false, false, false, false];
-	this.uniselectorIndex = [0, 0, 0, 0];
-	this.uniselector = [];
-	for (var i = 0; i < this.input.length; i++) {
+	this.uniselectorState = [];
+	this.uniselectorIndex = [];
+
+	for (var i = 0; i < this.siblings; i++) {
+
+		this.input[i] = 0;
+		this.manualInput[i] = false;
+
+		/*
+		But the inputs, instead of being controlled by parameters set by hand,
+		can be sent by the switches S through similar components arranged
+		on a uniselector (or 'stepping-switch') U. The values of the
+		components in U were deliberately randomised by taking the
+		actual numerical values from Fisher and Yates' Table of Random
+		Numbers. Once built on to the uniselectors, the values of these
+		parameters are determined at any moment by the positions of
+		the uniselectors. Twenty-five positions on each of four uniselectors
+		(one to each unit) provide 390,625 combinations of
+		parameter-values
+		*/
+		this.uniselectorState[i] = false;
+		this.uniselectorIndex[i] = 0;
 		this.uniselector[i] = [];
 		for (var j = 0; j < 25; j++) {
 			this.uniselector[i][j] = Math.round((Math.random() * 2 - 1) * this.resolution) / this.resolution;
 		}
+
+		// a commutator (X) which determines the polarity of entry to the coil
+		// +1 or -1
+		this.inputCommutator[i] = 1;
+
+		// a potentiometer (P) which determines what fraction of the input shall reach the coil.
+		// real number between 0 and 1
+		this.inputPotentiometer[i] = 1;
+
+		// coil
+		this.inputCoil[i] = 0;
 	}
-
-	// a commutator (X) which determines the polarity of entry to the coil
-	// +1 or -1
-	this.inputCommutator = [1, 1, 1, 1];
-
-	// a potentiometer (P) which determines what fraction of the input shall reach the coil.
-	// real number between 0 and 1
-	this.inputPotentiometer = [1, 1, 1, 1];
-
-	// coil
-	this.inputCoil = [0, 0, 0, 0];
-
-	this.output = this.input[0];
-
-	this.manualOutput = false;
 
 };
 
@@ -115,10 +124,12 @@ HomeostatUnit.prototype.update = function() {
 			}
 			this.output += this.inputCoil[i];
 		};
+
 		// this.output = Math.round( (this.output / this.input.length) * this.resolution) / this.resolution;
 		divisor = divisor == 0 ? +this.input.length : divisor;
 		this.output = Math.round( (this.output / divisor) * this.resolution) / this.resolution;
 
+		// uniselector auto change
 		if((this.output > 0.1 || this.output < -0.1) && this.steps - this.uniselectorLastChange > this.uniselectorDelay) {
 			for (var i = 0; i < this.input.length; i++) {
 				if(this.uniselectorIndex[i] < this.uniselector[i].length - 1) {
@@ -146,7 +157,7 @@ HomeostatUnit.prototype.getHtml = function() {
 		html += '<h2>Input</h2>';
 		html += '<ul class="input-wrapper">';
 
-		for (var i = 0; i < 4; i++) {
+		for (var i = 0; i < this.siblings; i++) {
 			html += '<li class="input input-' + i + '">';
 				html += '<div class="math-operation">';
 
@@ -203,15 +214,14 @@ HomeostatUnit.prototype.getHtml = function() {
 /////////////////////
 
 var Homeostat = function() {
-	this.unit = new Array();
+	this.unit = new Array()
+	this.children = 4;
 
-	for (var i = 0; i < 4; i++) {
+	for (var i = 0; i < this.children; i++) {
 		this.unit[i] = new HomeostatUnit({
-			id: i
+			id: i,
+			siblings: this.children
 		});
-	}
-
-	for (var i = 0; i < this.unit.length; i++) {
 		$('#homeostat').append(this.unit[i].getHtml());
 	}
 };
