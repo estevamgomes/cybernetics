@@ -1,0 +1,126 @@
+#homeostat {
+	font-family: @font;
+	display: table;
+	width: 100%;
+	padding: 2% 5% 8% 5%;
+
+	.homeostat-unit {
+		display: table-cell;
+		width: 25%;
+
+		.input-wrapper {
+			list-style-type: none;
+			padding: 0;
+			margin: 0;
+			width: 90%;
+
+			.input {
+				margin-bottom: 6px;
+				padding-bottom: 6px;
+				border-bottom: 1px solid @vermelho;
+
+				&:last-child {
+					border-bottom: 0;
+				}
+				input, select {
+					padding: 0;
+					border: 0;
+				}
+
+				button {
+					background: @branco;
+					text-transform: uppercase;
+					font-weight: bold;
+					border: 1px solid @preto;
+					box-shadow: 0 1px 0 0 @preto;
+					font-size: 1.1rem;
+					padding: .3em .6em .2em .6em;
+					margin: 0 5px 5px 0;
+					&:hover, &:focus, &:active {
+						background: @verdeclaro;
+					}
+					&.active {
+						background: @vermelho;
+						color: @branco;
+					}
+				}
+
+				.math-operation {
+					display: table;
+					margin-bottom: 10px;
+					.label {
+						text-transform: uppercase;
+						font-weight: bold;
+					}
+					.number {
+						width: 4em;
+						overflow: hidden;
+						display: block;
+					}
+					select {
+						display: block;
+						width: 4em;
+					}
+					.math-operand, .math-sign {
+						display: table-cell;
+						vertical-align: middle;
+					}
+					.math-sign {
+						color: @vermelho;
+						font-size: 1.4rem;
+						padding: 0 .5em;
+					}
+				}
+
+				.ui-slider {
+					background: @branco;
+					box-shadow: 0 1px 0 0 @preto inset;
+					border: 1px solid @preto;
+					margin-bottom: 10px;
+					.ui-slider-handle {
+						height: 22px;
+						width: 12px;
+						background: @branco;
+						box-shadow: 0 1px 0 @preto;
+						border: 1px solid @preto;
+						margin-top: -6px;
+						cursor: grab;
+						cursor: -webkit-grab;
+						cursor: -moz-grab;
+						&.ui-state-active {
+							cursor: grabbing;
+							cursor: -webkit-grabbing;
+							cursor: -moz-grabbing;
+						}
+					}
+				}
+			}
+		}
+
+		.output {
+			.ui-slider {
+				background: @preto;
+				box-shadow: 0 1px 0 0 @branco inset;
+				border: 1px solid @branco;
+				width: 90%;
+				margin: 5% 0 10% 0;
+				.ui-slider-handle {
+					height: 22px;
+					width: 12px;
+					background: @preto;
+					box-shadow: 0 1px 0 @branco;
+					border: 1px solid @branco;
+					margin-top: -6px;
+					cursor: grab;
+					cursor: -webkit-grab;
+					cursor: -moz-grab;
+					&.ui-state-active {
+						cursor: grabbing;
+						cursor: -webkit-grabbing;
+						cursor: -moz-grabbing;
+					}
+				}
+			}
+		}
+	}
+}

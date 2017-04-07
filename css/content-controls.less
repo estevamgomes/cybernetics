@@ -1,0 +1,39 @@
+#controls {
+	font-family: @font;
+	padding: 5% 5% 0 5%;
+	button, .input {
+		float: left;
+		padding: .3em .6em .2em .6em;
+
+		font-weight: bold;
+		font-size: 1.4rem;
+		color: @preto;
+		text-transform: uppercase;
+	}
+	button {
+		border: 1px solid @preto;
+		box-shadow: 0 1px 0 0 @preto;
+		margin-right: 5px;
+		background: @branco;
+		&:hover, &:focus, &:active {
+			background: @verdeclaro;
+		}
+		&:active {
+			padding: .4em .6em .1em .6em;
+			box-shadow: 0 1px 0 0 @preto inset;
+		}
+		&.disabled {
+			border-color: mix(@branco, @preto, 70%);
+			color: mix(@branco, @preto, 70%);
+			box-shadow: 0 1px 0 0 mix(@branco, @preto, 70%);
+			background: mix(@branco, @preto, 95%);
+		}
+	}
+	.input {
+		input {
+			padding: 0;
+			border: 0;
+			max-width: 3em;
+		}
+	}
+}
