@@ -13,6 +13,7 @@ var HomeostatUnit = function(config) {
 	this.siblings 	= config.siblings;
 
 	this.output 	  = 0;
+	this.outputLimit  = 0.5;	// se o output estiver entre +outputLimit e -outputLimit o homeostato está em equilíbrio
 	this.manualOutput = false;
 
 	this.input 				= [];
@@ -115,9 +116,8 @@ HomeostatUnit.prototype.updateUI = function() {
 		}
 	};
 
-	$unit.find('.output-value').html(this.output);	
-	$unit.find('.output-graph-bar').css('left', (50 + 50 * this.output) + "%");	
-	$unit.find('.output-slider').slider('value', this.output);	
+	$unit.find('.output-value').html(this.output);
+	$unit.find('.output-slider').slider('value', this.output);
 };
 
 /*
@@ -145,6 +145,7 @@ HomeostatUnit.prototype.loop = function() {
  * Update the values
  */
 HomeostatUnit.prototype.update = function() {
+
 	if(!this.manualOutput) {
 		this.output = 0;
 		for (var i = 0; i < this.input.length; i++) {
@@ -158,17 +159,23 @@ HomeostatUnit.prototype.update = function() {
 		this.output = Math.round( (this.output / this.input.length) * this.resolution) / this.resolution;
 
 		// uniselector auto change
-		if((this.output > 1 || this.output < -1) && this.steps - this.uniselectorLastChange > this.uniselectorDelay) {
+		if((this.output > this.outputLimit || this.output < -this.outputLimit) && this.steps - this.uniselectorLastChange > this.uniselectorDelay) {
 			for (var i = 0; i < this.input.length; i++) {
+				/*
+				// funcionamento da forma como foi descrito
 				if(this.uniselectorIndex[i] < this.uniselector[i].length - 1) {
 					this.uniselectorIndex[i]++;
 				} else {
 					this.uniselectorIndex[i] = 0;
 				}
+				*/
+				// alteração randomica
+				this.uniselectorIndex[i] = Math.floor(Math.random() * this.uniselector[i].length);
 			}
 			this.uniselectorLastChange = this.steps;
 		}
 	}
+
 	this.steps++;
 };
 
@@ -182,7 +189,6 @@ HomeostatUnit.prototype.getHtml = function() {
 
 		html += '<div class="output">';
 			html += '<h2>Output: <span class="output-value"></span></h2>';
-			html += '<div class="output-graph"><div class="output-graph-bar"></div></div>';
 		html += '</div>';
 
 		html += '<h2>Input</h2>';
