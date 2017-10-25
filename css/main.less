@@ -2,19 +2,6 @@
 @import url('https://fonts.googleapis.com/css?family=Gravitas+One|Overpass+Mono:400,700|Libre+Baskerville:400,400i,700');
 @font: 'Overpass Mono', monospace;
 @font-body: 'Libre Baskerville', serif;
-@font-header: 'Gravitas One', serif;
-
-// Esquema de fontes 1
-// @import url('https://fonts.googleapis.com/css?family=Abril+Fatface|Overpass+Mono:400,700|Libre+Baskerville:400,400i,700');
-// @font: 'Overpass Mono', monospace;
-// @font-body: 'Libre Baskerville', serif;
-// @font-header: 'Abril Fatface', serif;
-
-// Outras possíveis fontes para o título
-// @import url('https://fonts.googleapis.com/css?family=Chonburi|Kumar+One|Kumar+One+Outline|Ramaraja|Rozha+One');
-// @font-header: 'Chonburi', cursive;
-// @font-header: 'Kumar One', cursive;
-// @font-header: 'Kumar One Outline', cursive;
 
 /////////////////////////
 ///////// CORES /////////
@@ -110,7 +97,7 @@ h1, h2, h3, h4, h5, h6 {
 	font-family: @font, monospace;
 }
 
-h1, h2 {
+h1 {
 	text-transform: uppercase;
 	letter-spacing: .1em;
 }
@@ -121,38 +108,35 @@ h3 { font-size: 1.2rem; }
 
 #main-title {
 
-	background: @verdeclaro;
-	padding: 5%;
-	text-align: center;
-	color: @vermelho;
-	h1 {
-		font-family: @font-header;
-		letter-spacing: 0;
-		font-weight: normal;
-		font-size: 4.2rem;
-		margin: .2em 0;
-	}
+	padding: 5% 5% 3rem 5%;
+
 	a {
 		text-decoration: none;
-		color: mix(@verde, @azul, 70%);
+		color: @vermelho;
 	}
 }
 
 #summary {
-	text-align: center;
+
+	padding: 0 5% 5% 5%;
+
 	ul {
 		padding: 0;
 		list-style: none;
 		font-size: 1.2em;
 		li {
-			padding: 5%;
-			border-bottom: 1px solid @verdeclaro;
+			position: relative;
+			margin-bottom: 3rem;
 			a {
 				text-decoration: none;
 				color: @vermelho;
 			}
+			.name, .author {
+				margin-left: 5rem;
+			}
 			.name {
-				margin-bottom: 0;
+				margin-bottom: .4rem;
+				font-size: 1.4rem;
 			}
 			.author {
 				font-style: italic;
@@ -160,6 +144,11 @@ h3 { font-size: 1.2rem; }
 			}
 			.year {
 				display: block;
+				font-family: @font;
+				font-weight: bold;
+				position: absolute;
+				top: 0;
+				border-bottom: 2px solid @preto;
 			}
 		}
 	}
@@ -191,6 +180,12 @@ h3 { font-size: 1.2rem; }
 	a {
 		text-decoration: none;
 		color: @vermelho;
+	}
+	ol.lower-alpha {
+		list-style-type: lower-alpha;
+	}
+	ol.lower-roman {
+		list-style-type: lower-roman;
 	}
 }
 
