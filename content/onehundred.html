@@ -34,17 +34,28 @@
 	<button type="button" id="play">Pause</button>
 	<button type="button" id="random">Random</button>
 	<button type="button" id="reset">Reset</button>
-	<div class="input">
-		<label>FPS:</label>
-		<input type="number" id="fps">
-	</div>
-	<div class="input">
-		<label>Number of Units:</label>
-		<input type="number" id="unitn" min="2" max="200">
-	</div>
-	<div class="input">
-		<label>Number of Connections:</label>
-		<input type="number" id="unitcnx" min="0" max="200">
+
+	<button type="button" class="example" data-bulbs="100" data-cnx="0">Ex.1</button>
+	<button type="button" class="example" data-bulbs="100" data-cnx="40">Ex.2</button>
+	<button type="button" class="example" data-bulbs="10" data-cnx="10">Ex.3</button>
+
+	<div class="clear stats">
+		<div class="input">
+			<label>FPS:</label>
+			<input type="number" id="fps">
+		</div>
+		<div class="input">
+			<label>Number of Units:</label>
+			<input type="number" id="unitn" min="2" max="150">
+		</div>
+		<div class="input">
+			<label>Number of Connections:</label>
+			<input type="number" id="unitcnx" min="0" max="100">
+		</div>
+		<div class="input">
+			<label>Frames elapsed until equilibrium:</label>
+			<input type="number" id="frameselapsed" readonly="readonly">
+		</div>
 	</div>
 </nav>
 
@@ -60,10 +71,10 @@
 	<p>Imagine a system of a hundred lights. Each light can be in one of two possible states. In one state the light is on. The lights are so constructed that any light which is on always has a 50-50 chance of going off in the next second . In the other state the light is off. Connections between lights are constructed so that any light which is off has a 50-50 chance of going on again in the next second, provided at least one of the lights it is connected to is on. If the lights it is directly connected to are off, for the time being it has no chance of going on again, and stays off. If the lights are ever all off simultaneously, then they will all stay off for good, since when no light is on, none of the lights has any chance of being reactivated. This is a state of equilibrium. Sooner or later the system of lights will reach it.</p>
 	<p>This system of lights will help us understand the history of a form-making process. Each light is a binary variable, and so may be thought of as a misfit variable. The off state corresponds to fit; the on state corresponds to misfit. The fact that a light which is on has a 50-50 chance of going off every second, corresponds to the fact that whenever a misfit occurs efforts are made to correct it. The fact that lights which are off can be turned on again by connected lights, corresponds to the fact that even well-fitting aspects of a form can be unhinged by changes initiated to correct some other misfit because of connections between variables. The state of equilibrium, when all the lights are off, corresponds to perfect fit or adaptation. It is the equilibrium in which all the misfit variables take the value 0. Sooner or later the system of lights will always reach this equilibrium. The only question that remains is, how long will it take for this to happen? It is not hard to see that apart from chance this depends only on the pattern of interconnections between the lights.</p>
 	<p>Let us consider two extreme circumstances.</p>
-	<p>1. On the one hand, suppose there are no interconnections between lights at all. In this case there is nothing to prevent each light's staying off for good, as soon as it goes off. The average time it takes for all the lights to go off is therefore only a little greater than the average time it takes for a single light to go off, namely 21 seconds or 2 seconds.</p>
-	<p>2. On the other hand, imagine such rich interconnections between lights that any one light still on quickly rouses all others from the off state and puts them on again. The only way in which this system can reach adaptation is by the pure chance that all 100 happen to go off at the same moment. The average time which must elapse before this happens will be of the order of 2100 seconds, or 1022 years.</p>
-	<p>The second case is usele ss. The age of the universe itself is only about 1010 years. For all intents and purposes the system will never adapt. But the first case is no use either. In any real system there are interconnections between variables which make it impossible for each variable to adapt in complete isolation. Let us therefore construct a third possibility.</p>
-	<p>3. In this case suppose there are again interconnections among the 100 lights, but that we discern in the pattern of interconnections some 10 principal subsystems, each containing 10 lights. The lights within each subsystem are so strongly connected to one another that again all 10 must go off simultaneously before they will stay off; yet at the same time the subsystems themselves are independent of one another as wholes, so that the lights in one subsystem can be switched off without being reactivated by others flashing in other subsystems . The average time it will take for all 100 lights to go off is about the same as the time it takes for one subsystem to go off, namely 210 seconds, or about a quarter of an hour.</p>
+	<p>1. On the one hand, suppose there are no interconnections between lights at all. In this case there is nothing to prevent each light's staying off for good, as soon as it goes off. The average time it takes for all the lights to go off is therefore only a little greater than the average time it takes for a single light to go off, namely 2<sup>1</sup> seconds or 2 seconds.</p>
+	<p>2. On the other hand, imagine such rich interconnections between lights that any one light still on quickly rouses all others from the off state and puts them on again. The only way in which this system can reach adaptation is by the pure chance that all 100 happen to go off at the same moment. The average time which must elapse before this happens will be of the order of 2<sup>100</sup> seconds, or 10<sup>22</sup> years.</p>
+	<p>The second case is useless. The age of the universe itself is only about 10<sup>10</sup> years. For all intents and purposes the system will never adapt. But the first case is no use either. In any real system there are interconnections between variables which make it impossible for each variable to adapt in complete isolation. Let us therefore construct a third possibility.</p>
+	<p>3. In this case suppose there are again interconnections among the 100 lights, but that we discern in the pattern of interconnections some 10 principal subsystems, each containing 10 lights. The lights within each subsystem are so strongly connected to one another that again all 10 must go off simultaneously before they will stay off; yet at the same time the subsystems themselves are independent of one another as wholes, so that the lights in one subsystem can be switched off without being reactivated by others flashing in other subsystems . The average time it will take for all 100 lights to go off is about the same as the time it takes for one subsystem to go off, namely 2<sup>10</sup> seconds, or about a quarter of an hour.</p>
 	<p>Of course, real systems do not behave so simply. But fifteen minutes is not much greater than the two seconds it takes an isolated variable to adapt, and the enormous gap between these magnitudes and 1022 years does teach us a vital lesson. No complex adaptive system will succeed in adapting in a reasonable amount of time unless the adaptation can proceed subsystem by subsystem, each subsystem relatively independent of the others.</p>
 	<p>(...)</p>
 </article>

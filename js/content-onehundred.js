@@ -1,3 +1,18 @@
+////////////////////////////
+///// HELPER FUNCTIONS /////
+////////////////////////////
+
+// Converts from degrees to radians.
+Math.radians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+ 
+// Converts from radians to degrees.
+Math.degrees = function(radians) {
+  return radians * 180 / Math.PI;
+};
+
+
 //////////////////////
 ///// Light Unit /////
 //////////////////////
@@ -7,9 +22,11 @@
  */
 var LightUnit = function(config) {
 	this.id    = config.id; // id
+	this.cx    = config.cx; // id
+	this.cy    = config.cy; // id
 	this.state = false; 	// state [true = on; false = off]
 
-	this.siblings = config.siblings; // array of siblings IDs
+	this.siblings = new Array(); // array of siblings IDs
 
 	this.reset();
 };
@@ -18,8 +35,25 @@ var LightUnit = function(config) {
  * LightUnit: reset()
  * Reset all variables
  */
+LightUnit.prototype.addsibling = function(sibling) {
+	this.siblings.push(sibling);
+};
+
+/*
+ * LightUnit: reset()
+ * Reset all variables
+ */
 LightUnit.prototype.reset = function() {
 	this.state = Math.random() > .5 ? true : false;
+	this.updateUI(); // update the user interface
+};
+
+/*
+ * LightUnit: turnOn()
+ * Turn this lightbulb on
+ */
+LightUnit.prototype.turnOn = function() {
+	this.state = true;
 	this.updateUI(); // update the user interface
 };
 
@@ -40,66 +74,188 @@ LightUnit.prototype.loop = function() {
 	this.updateUI();
 };
 
-/*
- * LightUnit: getHtml()
- * Output the user interface HTML
- */
-LightUnit.prototype.getHtml = function() {
-	var html = '<div id="unit-' + this.id + '" class="light-unit"></div>';
-	return html;
-};
-
 
 ///////////////////////
 ///// Light Array /////
 ///////////////////////
 
 var LightArray = function(config) {
-	this.unit 			= new Array();
+	this.unitArray		= new Array(); // lampadas
+	this.unitArrayCnx	= new Array(); // id das lampadas que precisam de conexao
+	this.cnxArray		= new Array(); // array com conexoes
+	this.connections	= config.connections || 0;
 	this.children 		= config.children || 100;
-	this.connections	= config.connections || 10;
+
+	this.equilibrium	= false;
+	this.frameselapsed	= 0;
 
 	if(this.connections > this.children) this.connections = this.children;
 
-	$('#onehundred').html('');
+	this.bulbradius 	= 10;
+	this.cellw 			= this.bulbradius * 4;
+	this.cellh			= this.bulbradius * 4;
+	this.maxline		= Math.floor(Math.sqrt(this.children));
+	this.maxcol 		= Math.ceil(this.children / this.maxline);
+	this.col 			= 1;
+	this.line 			= 1;
+	this.stagewidth  	= this.maxcol * this.cellw;
+	this.stageheight 	= this.maxline * this.cellh;
 
+	// create connections
 	for (var i = 0; i < this.children; i++) {
-
-		var siblings = new Array();
-		for (var j = 0; j < this.connections; j++) {
-			siblings[j] = Math.floor(Math.random() * this.children);
-		}
-
-		this.unit[i] = new LightUnit({
+		this.unitArray[i] = new LightUnit({
 			id: i,
-			siblings: siblings
+			cx: this.cellw * (this.col - 1) + this.bulbradius + Math.random() * (this.cellw - this.bulbradius * 2),
+			cy: this.cellh * (this.line - 1) + this.bulbradius + Math.random() * (this.cellh - this.bulbradius * 2)
 		});
 
-		$('#onehundred').append(this.unit[i].getHtml());
+		if(this.col >= this.maxcol) {
+			this.col = 1;
+			this.line += 1;
+		} else {
+			this.col += 1;
+		}
+
+		this.unitArrayCnx[i] = i;
 	}
+
+	// create connections
+	this.createCnx = function(id1, id2) {
+		// test to see if they are already siblings
+		var alreadysiblings = false;
+		for (var j = 0; j < this.unitArray[id1].siblings.length; j++) {
+			if(this.unitArray[id1].siblings[j] == id2) alreadysiblings = true;
+		};
+
+		if(!alreadysiblings) {
+			this.unitArray[id1].addsibling(id2);
+			this.unitArray[id2].addsibling(id1);
+			this.cnxArray.push([id1, id2]);
+		}
+
+		if(this.unitArray[id1].siblings.length >= this.connections) {
+			var index = this.unitArrayCnx.indexOf(id1);
+			if (index > -1) this.unitArrayCnx.splice(index, 1);
+		}
+	};
+
+	// distance between two bulbs
+	this.dist = function(id1, id2) {
+		return Math.sqrt(Math.pow(this.unitArray[id1].cx - this.unitArray[id2].cx, 2) + Math.pow(this.unitArray[id1].cy - this.unitArray[id2].cy, 2));
+	};
+
+	this.findclosest = function(id, howmany) {
+		var distArray = new Array();
+		for (var i = 0; i < this.unitArrayCnx.length; i++) {
+			distArray.push({
+				id: this.unitArrayCnx[i],
+				dist: this.dist(id, this.unitArrayCnx[i])
+			});
+		}
+		distArray.sort(function(a, b) {
+			return ((a.dist < b.dist) ? -1 : ((a.dist == b.dist) ? 0 : 1));
+		});
+		return distArray.splice(0, howmany);
+	};
+
+	// create connections
+	while (this.unitArrayCnx.length > 0) {
+		var i = Math.floor(Math.random() * this.unitArray.length);
+	// for (var i = 0; i < this.unitArray.length; i++) {
+
+		// remove da array
+		var index = this.unitArrayCnx.indexOf(i);
+		if (index > -1) this.unitArrayCnx.splice(index, 1);
+
+		var howmany = this.connections - this.unitArray[i].siblings.length;
+		var closest = this.findclosest(i, howmany);
+		
+		for (var j = 0; j < closest.length; j++) {
+			this.createCnx(closest[j].id, i);
+		};
+	}
+
+	// algumas vezes alguns elementos ficam com menos conexões
+	/*
+	for (var i = 0; i < this.unitArray.length; i++) {
+		console.log(this.unitArray[i].siblings.length);
+	}
+	*/
+
+	///////////
+	/// svg ///
+	///////////
+
+	// svg variables
+	var svg = '';
+
+	// draw connections
+	for (var i = this.cnxArray.length - 1; i >= 0; i--) {
+		var unitA = this.unitArray[this.cnxArray[i][0]];
+		var unitB = this.unitArray[this.cnxArray[i][1]];
+		svg += '<line id="cnx-' + this.cnxArray[i][0] + '-' + this.cnxArray[i][1] + '" class="cnx" x1="' + unitA.cx + '" y1="' + unitA.cy + '" x2="' + unitB.cx + '" y2="' + unitB.cy + '" />';
+	};
+
+	// draw bulbs
+	for (var i = this.unitArray.length - 1; i >= 0; i--) {
+		var unit = this.unitArray[i];
+  		svg += '<circle class="light-unit" id="unit-' + unit.id +'" data-id="' + unit.id +'" cx="' + unit.cx + '" cy="' + unit.cy + '" r="' + this.bulbradius + '" />';
+	};
+
+	// append html
+	$('#onehundred').html('<svg id="connections" height="' + this.stageheight + 'px" width="' + this.stagewidth + 'px">' + svg + '</svg>');
+
+	// ligar ao clicar
+	var unit = this.unitArray;
+	$('#onehundred .light-unit').click(function() {
+		unit[$(this).data('id')].turnOn();
+	});
 };
 
 LightArray.prototype.loop = function() {
+	// supõe que está equilibrado
+	this.equilibrium = true;
 
+	// salva o esta atual das lâmpadas em uma nova array
+	// para que elas mudam de estado simultaneamente e não em cadeia
 	var currentState = new Array();
-	for (var i = 0; i < this.unit.length; i++) {
-		currentState[i] = this.unit[i].state;
+	for (var i = 0; i < this.unitArray.length; i++) {
+		currentState[i] = this.unitArray[i].state;
 	}
 
-	for (var i = 0; i < this.unit.length; i++) {
+	for (var i = 0; i < this.unitArray.length; i++) {
 		// if any sibling is on
 		var siblingOn = false;
-		for (var j = 0; j < this.unit[i].siblings.length; j++) {
-			var siblingId = this.unit[i].siblings[j];
+		for (var j = 0; j < this.unitArray[i].siblings.length; j++) {
+			var siblingId = this.unitArray[i].siblings[j];
 			if(currentState[siblingId] == true) siblingOn = true
 		}
 
 		// reset the light
-		if(this.unit[i].state == true || siblingOn) {
-			this.unit[i].reset();
+		if(this.unitArray[i].state == true || siblingOn) {
+			this.unitArray[i].reset();
 		}
+
+		// se a lâmpada estiver acesa não está em equilíbrio
+		if(this.unitArray[i].state == true) this.equilibrium = false;
 	}
 
+	// muda a cor da conexão
+	for (var i = this.cnxArray.length - 1; i >= 0; i--) {
+		var unitAid = this.cnxArray[i][0];
+		var unitA 	= this.unitArray[unitAid].state;
+		var unitBid = this.cnxArray[i][1];
+		var unitB 	= this.unitArray[unitBid].state;
+		var $cnx = $('#cnx-' + unitAid + '-' + unitBid);
+		if(unitA || unitB) {
+			$cnx.addClass('active');
+		} else {
+			$cnx.removeClass('active');
+		}
+	};
+
+	// aumenta o número de frames se não estiver em equilíbrio
+	if(!this.equilibrium) this.frameselapsed++;
 };
 
 
@@ -107,17 +263,29 @@ LightArray.prototype.loop = function() {
 ///// Loop /////
 ////////////////
 
-var children = 100;
-var connections = 100;
-var maxChildren = 200;
+var startChildren = 100;
+var children = startChildren;
 var minChildren = 2;
+var maxChildren = 150;
+
+var startCnx = 10;
+var connections = startCnx;
+var maxRandomCnx = 30;
+
 var lightArray = new LightArray({children: children, connections: connections});
 var play = true;
 var fps = 5;
 
-function loop() { if(play) lightArray.loop(); };
+function loop() { 
+	if(play) lightArray.loop();
+	updateFramesElapsed();
+};
 
 var start = setInterval(function(){ loop(); }, 1000 / fps);
+
+function updateFramesElapsed() { 
+	$('#frameselapsed').val(lightArray.frameselapsed);
+};
 
 $(document).ready(function(){
 
@@ -136,7 +304,7 @@ $(document).ready(function(){
 
 	$('#unitcnx').val(connections).change(function(event) {
 		connections = $(this).val();
-		connections = connections < maxChildren ? connections : maxChildren;
+		connections = connections < (maxChildren - 1) ? connections : maxChildren - 1;
 		connections = connections > 0 ? connections : 0;
 		lightArray = new LightArray({children: children, connections: connections});
 	});
@@ -162,7 +330,29 @@ $(document).ready(function(){
 	});
 
 	$('#reset').click(function() {
-		for(var i = 0; i < lightArray.unit.length; i++) lightArray.unit[i].reset();
+		lightArray.frameselapsed = 0;
+		for(var i = 0; i < lightArray.unitArray.length; i++) lightArray.unitArray[i].reset();
+	});
+
+	$('#random').click(function() {
+		children = Math.floor(Math.random() * (maxChildren - minChildren)) + minChildren;
+		connections = Math.floor(Math.random() * maxRandomCnx);
+		connections = connections < (children - 1) ? connections : children - 1;
+		connections = connections > 0 ? connections : 0;
+		$('#unitn').val(children);
+		$('#unitcnx').val(connections);
+		lightArray = new LightArray({children: children, connections: connections});
+	});
+
+	$('.example').click(function() {
+		children = $(this).data('bulbs');
+		connections = $(this).data('cnx');
+		connections = connections < (children - 1) ? connections : children - 1;
+		connections = connections > 0 ? connections : 0;
+		$('#unitn').val(children);
+		$('#unitcnx').val(connections);
+		lightArray = new LightArray({children: children, connections: connections});
 	});
 
 });
+

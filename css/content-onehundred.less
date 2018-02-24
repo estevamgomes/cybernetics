@@ -1,20 +1,33 @@
 #onehundred {
-	font-family: @font;
-	width: 100%;
-	padding: 2% 5% 8% 5%;
-	overflow: hidden;
 	clear: both;
+	padding: 2% 5% 8% 5%;
 
 	.light-unit {
-		float: left;
-		width: 20px;
-		height: 20px;
-		margin-right: 1%;
-		margin-bottom: 1%;
-		background: @preto;
-		border-radius: 50%;
+		cursor: pointer;
+		transition: all .1s;
+		fill: @preto;
+		// stroke: fade(@preto, 50%);
+		// stroke-width: 1;
 		&.active {
-			background: @vermelho;
+			cursor: default;
+			fill: @vermelho;
 		}
 	}
+
+	.cnx {
+		transition: all .1s;
+		stroke: fade(@preto, 30%);
+		stroke-width: 1;
+		&.active {
+			stroke: fade(@vermelho, 50%);
+		}		
+	}
+}
+
+.stats {
+	padding-top: 1em;
+}
+
+.clear {
+	clear: both;
 }

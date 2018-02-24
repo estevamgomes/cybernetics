@@ -24,7 +24,7 @@ var HomeostatUnit = function(config) {
 
 	this.uniselector 			= [];	// 25 randomized values between -1 and 1
 	this.uniselectorLastChange  = 0;	// last step when the uniselector was changed
-	this.uniselectorDelay		= 5; 	// delay between changes at the uniselector in steps
+	this.uniselectorDelay		= 15; 	// delay between changes at the uniselector in steps
 	this.uniselectorState 		= [];	// if uniselector is ON or OFF
 	this.uniselectorIndex 		= [];	// 
 
