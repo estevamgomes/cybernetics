@@ -277,7 +277,7 @@ var tick = setInterval(function(){ loop(); }, 1000 / fps);
 function updateFramesElapsed() { 
 	var frames 	= lightArray.frameselapsed,
 		seg 	= frames % 60,
-		min 	= Math.floor(lightArray.frameselapsed / 60),
+		min 	= Math.floor(lightArray.frameselapsed / 60) % 60,
 		h 		= Math.floor(lightArray.frameselapsed / (60 * 60));
 	var clock 	= '';
 	clock += h < 10 ? '0' + h : h;
