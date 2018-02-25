@@ -1,18 +1,3 @@
-////////////////////////////
-///// HELPER FUNCTIONS /////
-////////////////////////////
-
-// Converts from degrees to radians.
-Math.radians = function(degrees) {
-  return degrees * Math.PI / 180;
-};
- 
-// Converts from radians to degrees.
-Math.degrees = function(radians) {
-  return radians * 180 / Math.PI;
-};
-
-
 //////////////////////
 ///// Light Unit /////
 //////////////////////
@@ -83,13 +68,17 @@ var LightArray = function(config) {
 	this.unitArray		= new Array(); // lampadas
 	this.unitArrayCnx	= new Array(); // id das lampadas que precisam de conexao
 	this.cnxArray		= new Array(); // array com conexoes
-	this.connections	= config.connections || 0;
 	this.children 		= config.children || 100;
+	this.children 		= this.children > 2 ? this.children : 2; // garante que tenha pelo menos uma lâmpada
+
+	this.connections	= config.connections || 0;
+
+	// limita o número de conexões
+	this.connections 	= Number(this.connections) < Number(this.children) ? this.connections : this.children - 1;
+	this.connections 	= Number(this.connections) > 0 ? this.connections : 0;
 
 	this.equilibrium	= false;
 	this.frameselapsed	= 0;
-
-	if(this.connections > this.children) this.connections = this.children;
 
 	this.bulbradius 	= 10;
 	this.cellw 			= this.bulbradius * 4;
@@ -277,42 +266,78 @@ var play = true;
 var fps = 5;
 
 function loop() { 
-	if(play) lightArray.loop();
-	updateFramesElapsed();
+	if(play) {
+		lightArray.loop();
+		updateFramesElapsed();
+	}
 };
 
-var start = setInterval(function(){ loop(); }, 1000 / fps);
+var tick = setInterval(function(){ loop(); }, 1000 / fps);
 
 function updateFramesElapsed() { 
-	$('#frameselapsed').val(lightArray.frameselapsed);
+	var frames 	= lightArray.frameselapsed,
+		seg 	= frames % 60,
+		min 	= Math.floor(lightArray.frameselapsed / 60),
+		h 		= Math.floor(lightArray.frameselapsed / (60 * 60));
+	var clock 	= '';
+	clock += h < 10 ? '0' + h : h;
+	clock += ':';
+	clock += min < 10 ? '0' + min : min;
+	clock += ':';
+	clock += seg < 10 ? '0' + seg : seg;
+	$('#elapsedtime').html(clock);
 };
+
+function limitConnections() {
+	connections = connections < (children - 1) ? connections : children - 1;
+	connections = connections > 0 ? connections : 0;
+	$('#unitcnx').val(connections);
+}
+
+function resetSystem(nchildren, ncnx) {
+	play = false;
+	children = nchildren;
+	children = children < maxChildren ? children : maxChildren;
+	children = children > minChildren ? children : minChildren;
+
+	ncnx = ncnx < (children - 1) ? ncnx : children - 1;
+	ncnx = ncnx > 0 ? ncnx : 0;
+
+	connections = ncnx;
+
+	$('#unitn').val(children);
+	$('#unitcnx').val(connections).attr({
+		max: children
+	});
+
+	lightArray = new LightArray({children: children, connections: connections});
+	play = true;
+}
+
+function setFPS(newfps) {
+	fps = newfps;
+	$('#fps').val(newfps);
+
+	clearInterval(tick);
+	tick = setInterval(function(){ loop(); }, 1000 / newfps);
+}
 
 $(document).ready(function(){
 
 	$('#unitn').val(children).change(function(event) {
-		children = $(this).val();
-		if(children > maxChildren) children = maxChildren;
-		if(children < minChildren) children =  minChildren;
-		lightArray = new LightArray({children: children, connections: connections});
-
-		$('#unitcnx').attr({
-			max: children
-		});
-
-		if(children < connections) $('#unitcnx').val(children);
+		resetSystem($(this).val(), connections);
 	});
 
 	$('#unitcnx').val(connections).change(function(event) {
-		connections = $(this).val();
-		connections = connections < (maxChildren - 1) ? connections : maxChildren - 1;
-		connections = connections > 0 ? connections : 0;
-		lightArray = new LightArray({children: children, connections: connections});
+		resetSystem(children, $(this).val());
 	});
 
 	$('#fps').val(fps).change(function(event) {
-		fps = $(this).val();
-		clearInterval(start);
-		start = setInterval(function(){ loop(); }, 1000 / fps);
+		setFPS($(this).val());
+	});
+
+	$('.setfps').click(function(event) {
+		setFPS($(this).data('fps'));
 	});
 
 	$('#step').addClass('disabled').click(function() {
@@ -335,23 +360,13 @@ $(document).ready(function(){
 	});
 
 	$('#random').click(function() {
-		children = Math.floor(Math.random() * (maxChildren - minChildren)) + minChildren;
-		connections = Math.floor(Math.random() * maxRandomCnx);
-		connections = connections < (children - 1) ? connections : children - 1;
-		connections = connections > 0 ? connections : 0;
-		$('#unitn').val(children);
-		$('#unitcnx').val(connections);
-		lightArray = new LightArray({children: children, connections: connections});
+		var randomchildren = Math.floor(Math.random() * (maxChildren - minChildren)) + minChildren;
+		var randomcnx = Math.floor(Math.random() * maxRandomCnx);
+		resetSystem(randomchildren, randomcnx);
 	});
 
 	$('.example').click(function() {
-		children = $(this).data('bulbs');
-		connections = $(this).data('cnx');
-		connections = connections < (children - 1) ? connections : children - 1;
-		connections = connections > 0 ? connections : 0;
-		$('#unitn').val(children);
-		$('#unitcnx').val(connections);
-		lightArray = new LightArray({children: children, connections: connections});
+		resetSystem($(this).data('bulbs'), $(this).data('cnx'));
 	});
 
 });
