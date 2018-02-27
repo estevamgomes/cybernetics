@@ -94,8 +94,8 @@ var LightArray = function(config) {
 	for (var i = 0; i < this.children; i++) {
 		this.unitArray[i] = new LightUnit({
 			id: i,
-			cx: this.cellw * (this.col - 1) + this.bulbradius + Math.random() * (this.cellw - this.bulbradius * 2),
-			cy: this.cellh * (this.line - 1) + this.bulbradius + Math.random() * (this.cellh - this.bulbradius * 2)
+			cx: this.cellw * (this.col - 1) + this.bulbradius + Math.round(Math.random() * (this.cellw - this.bulbradius * 2)),
+			cy: this.cellh * (this.line - 1) + this.bulbradius + Math.round(Math.random() * (this.cellh - this.bulbradius * 2))
 		});
 
 		if(this.col >= this.maxcol) {
@@ -192,7 +192,7 @@ var LightArray = function(config) {
 	};
 
 	// append html
-	$('#onehundred').html('<svg id="connections" height="' + this.stageheight + 'px" width="' + this.stagewidth + 'px">' + svg + '</svg>');
+	$('#onehundred').html('<svg id="connections" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 ' + this.stagewidth + ' ' + this.stageheight + '">' + svg + '</svg>');
 
 	// ligar ao clicar
 	var unit = this.unitArray;
