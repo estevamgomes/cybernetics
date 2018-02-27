@@ -192,7 +192,7 @@ var LightArray = function(config) {
 	};
 
 	// append html
-	$('#onehundred').html('<svg id="connections" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 ' + this.stagewidth + ' ' + this.stageheight + '">' + svg + '</svg>');
+	$('#onehundred').html('<svg id="connections" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 ' + this.stagewidth + ' ' + this.stageheight + '" style="max-width:' + this.stagewidth + 'px">' + svg + '</svg>');
 
 	// ligar ao clicar
 	var unit = this.unitArray;
