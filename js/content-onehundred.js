@@ -252,24 +252,31 @@ LightArray.prototype.loop = function() {
 ///// Loop /////
 ////////////////
 
-var startChildren = 100;
-var children = startChildren;
-var minChildren = 2;
-var maxChildren = 150;
+var startChildren 	= 100;
+var children 		= startChildren;
+var minChildren 	= 2;
+var maxChildren 	= 150;
 
-var startCnx = 10;
-var connections = startCnx;
-var maxRandomCnx = 30;
+var startCnx 		= 10;
+var connections 	= startCnx;
+var maxRandomCnx 	= 30;
 
-var lightArray = new LightArray({children: children, connections: connections});
-var play = true;
-var fps = 5;
+var lightArray 		= new LightArray({children: children, connections: connections});
+var play 			= true;
+var fps 			= 5;
+
+var lastTick 		= new Date().getTime();
 
 function loop() { 
 	if(play) {
 		lightArray.loop();
 		updateFramesElapsed();
 	}
+
+	var millis 	= new Date().getTime();
+	var realfps = Math.floor(((1000 / fps) / (millis - lastTick)) * fps);
+	$('#realfps').html(realfps);
+	lastTick 	= millis;
 };
 
 var tick = setInterval(function(){ loop(); }, 1000 / fps);
@@ -286,7 +293,7 @@ function updateFramesElapsed() {
 	clock += ':';
 	clock += seg < 10 ? '0' + seg : seg;
 	$('#elapsedtime').html(clock);
-};
+}
 
 function limitConnections() {
 	connections = connections < (children - 1) ? connections : children - 1;
