@@ -13,7 +13,7 @@ var HomeostatUnit = function(config) {
 	this.siblings 	= config.siblings;
 
 	this.output 	  = 0;
-	this.outputLimit  = 0.5;	// se o output estiver entre +outputLimit e -outputLimit o homeostato está em equilíbrio
+	this.outputLimit  = 1;	// se o output estiver entre +outputLimit e -outputLimit o homeostato está em equilíbrio
 	this.manualOutput = false;
 
 	this.input 				= [];
@@ -118,6 +118,13 @@ HomeostatUnit.prototype.updateUI = function() {
 
 	$unit.find('.output-value').html(this.output);
 	$unit.find('.output-slider').slider('value', this.output);
+
+	// change slider color if is stable
+	if(this.output < this.outputLimit && this.output > -this.outputLimit) {
+		$unit.find('.output-slider').addClass('stable');
+	} else {
+		$unit.find('.output-slider').removeClass('stable');
+	}
 };
 
 /*
@@ -161,8 +168,8 @@ HomeostatUnit.prototype.update = function() {
 		// uniselector auto change
 		if((this.output > this.outputLimit || this.output < -this.outputLimit) && this.steps - this.uniselectorLastChange > this.uniselectorDelay) {
 			for (var i = 0; i < this.input.length; i++) {
-				/*
 				// funcionamento da forma como foi descrito
+				/*
 				if(this.uniselectorIndex[i] < this.uniselector[i].length - 1) {
 					this.uniselectorIndex[i]++;
 				} else {

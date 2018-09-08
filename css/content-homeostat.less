@@ -6,7 +6,6 @@
 
 	.homeostat-unit {
 		display: table-cell;
-		width: 25%;
 
 		.input-wrapper {
 			list-style-type: none;
@@ -17,7 +16,7 @@
 			.input {
 				margin-bottom: 6px;
 				padding-bottom: 6px;
-				border-bottom: 1px solid @vermelho;
+				border-bottom: 1px dotted @preto;
 
 				&:last-child {
 					border-bottom: 0;
@@ -76,7 +75,8 @@
 					background: @branco;
 					box-shadow: 0 1px 0 0 @preto inset;
 					border: 1px solid @preto;
-					margin-bottom: 10px;
+					margin-top: 15px;
+					margin-bottom: 15px;
 					.ui-slider-handle {
 						height: 22px;
 						width: 12px;
@@ -99,17 +99,17 @@
 
 		.output {
 			.ui-slider {
-				background: @preto;
-				box-shadow: 0 1px 0 0 @branco inset;
-				border: 1px solid @branco;
+				background: @vermelho;
+				box-shadow: 0 1px 0 0 @preto inset;
+				border: 1px solid @preto;
 				width: 90%;
 				margin: 5% 0 10% 0;
 				.ui-slider-handle {
 					height: 22px;
 					width: 12px;
-					background: @preto;
-					box-shadow: 0 1px 0 @branco;
-					border: 1px solid @branco;
+					background: @vermelho;
+					box-shadow: 0 1px 0 @preto;
+					border: 1px solid @preto;
 					margin-top: -6px;
 					cursor: grab;
 					cursor: -webkit-grab;
@@ -118,6 +118,14 @@
 						cursor: grabbing;
 						cursor: -webkit-grabbing;
 						cursor: -moz-grabbing;
+					}
+				}
+				&.stable {
+					transition: background .2s;
+					background: @verde;
+					.ui-slider-handle {
+						transition: background .2s;
+						background: @verde;	
 					}
 				}
 			}
